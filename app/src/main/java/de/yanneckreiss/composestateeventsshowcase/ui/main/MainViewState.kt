@@ -6,6 +6,6 @@ import de.palm.composestateevents.consumed
 
 data class MainViewState(
     val isLoading: Boolean = false,
-    val messageEvent: StateEvent = consumed,
-    val messageWithTimestampEvent: StateEventWithContent<String> = consumed(),
+    val processSuccessEvent: StateEvent = consumed,
+    val processSuccessWithTimestampEvent: StateEventWithContent<String> = consumed(),
 )

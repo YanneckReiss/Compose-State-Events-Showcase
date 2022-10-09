@@ -2,8 +2,6 @@ package de.yanneckreiss.composestateeventsshowcase.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import de.palm.composestateevents.StateEvent
-import de.palm.composestateevents.StateEventWithContent
 import de.palm.composestateevents.consumed
 import de.palm.composestateevents.triggered
 import kotlinx.coroutines.delay
@@ -30,14 +28,14 @@ class MainViewModel : ViewModel() {
             if (useTimestamp) {
                 _viewState.update { currentState ->
                     currentState.copy(
-                        messageWithTimestampEvent = triggered(SimpleDateFormat.getTimeInstance().format(Date())),
+                        processSuccessWithTimestampEvent = triggered(SimpleDateFormat.getTimeInstance().format(Date())),
                         isLoading = false
                     )
                 }
             } else {
                 _viewState.update { currentState ->
                     currentState.copy(
-                        messageEvent = triggered,
+                        processSuccessEvent = triggered,
                         isLoading = false
                     )
                 }
@@ -48,8 +46,8 @@ class MainViewModel : ViewModel() {
     fun setShowMessageConsumed() {
         _viewState.update { currentState ->
             currentState.copy(
-                messageEvent = consumed,
-                messageWithTimestampEvent = consumed()
+                processSuccessEvent = consumed,
+                processSuccessWithTimestampEvent = consumed()
             )
         }
     }

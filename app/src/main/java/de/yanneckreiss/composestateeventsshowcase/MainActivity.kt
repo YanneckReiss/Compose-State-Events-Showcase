@@ -45,14 +45,14 @@ private fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     EventEffect(
-        event = viewState.messageEvent,
+        event = viewState.processSuccessEvent,
         onConsumed = viewModel::setShowMessageConsumed
     ) {
         snackbarHostState.showSnackbar("Event success")
     }
 
     EventEffect(
-        event = viewState.messageWithTimestampEvent,
+        event = viewState.processSuccessWithTimestampEvent,
         onConsumed = viewModel::setShowMessageConsumed
     ) { timestamp ->
         snackbarHostState.showSnackbar("Event success at: $timestamp")
