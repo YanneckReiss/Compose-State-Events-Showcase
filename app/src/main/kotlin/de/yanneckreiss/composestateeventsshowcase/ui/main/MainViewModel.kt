@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.palm.composestateevents.consumed
 import de.palm.composestateevents.triggered
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,9 +19,9 @@ class MainViewModel : ViewModel() {
     private val _viewState = MutableStateFlow(MainViewState())
     val viewState = _viewState.asStateFlow()
 
-    fun startProcess(useTimestamp: Boolean) {
+    fun startProcess(useTimestamp: Boolean, dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate) {
 
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
 
             _viewState.update { currentState -> currentState.copy(isLoading = true) }
 
