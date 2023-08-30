@@ -17,7 +17,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.viewModelFactory
 import de.palm.composestateevents.EventEffect
+import de.yanneckreiss.composestateeventsshowcase.data.time_provider.TimeProviderImpl
 import de.yanneckreiss.composestateeventsshowcase.ui.main.MainViewModel
 import de.yanneckreiss.composestateeventsshowcase.ui.main.MainViewState
 import de.yanneckreiss.composestateeventsshowcase.ui.theme.ComposeStateEventsShowcaseTheme
@@ -37,7 +39,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun MainScreen(viewModel: MainViewModel = viewModel()) {
+private fun MainScreen(
+    viewModel: MainViewModel = viewModel(
+        modelClass = MainViewModel::class.java,
+        factory = viewModelFactory { MainViewModel(TimeProviderImpl()) })
+) {
 
     val viewState: MainViewState by viewModel.viewState.collectAsStateWithLifecycle()
 
