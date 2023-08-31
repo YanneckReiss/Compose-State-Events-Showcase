@@ -3,6 +3,7 @@
 package de.yanneckreiss.composestateeventsshowcase.ui.main
 
 import app.cash.turbine.test
+import app.cash.turbine.turbineScope
 import de.palm.composestateevents.StateEvent
 import de.palm.composestateevents.StateEventWithContent
 import de.palm.composestateevents.StateEventWithContentConsumed
@@ -10,12 +11,18 @@ import de.palm.composestateevents.StateEventWithContentTriggered
 import de.palm.composestateevents.consumed
 import de.palm.composestateevents.triggered
 import de.yanneckreiss.composestateeventsshowcase.MainDispatcherRule
+import de.yanneckreiss.composestateeventsshowcase.data.time_provider.TimeProvider
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -25,12 +32,17 @@ class MainViewModelTest {
 
     private lateinit var viewModel: MainViewModel
 
+    private val testTimeStamp = "12:00:00"
+    private val timeProvider = object : TimeProvider {
+        override fun getTimestampFromNow(): String = testTimeStamp
+    }
+
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
     @Before
     fun setUp() {
-        viewModel = MainViewModel()
+        viewModel = MainViewModel(timeProvider)
     }
 
     @Test
@@ -65,18 +77,17 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `ViewState process Success should be correctly be reset to consumed`() = runTest {
+    fun `ViewState process Success should be correctly be reset to consumed`() = runTest(StandardTestDispatcher()) {
+
         viewModel.viewState.test {
-            val viewStateBeforeProcessing: MainViewState = awaitItem()
-            assertEquals(viewStateBeforeProcessing, viewStateBeforeProcessing.copy(processSuccessEvent = consumed))
+            awaitItem()
             viewModel.startProcess(useTimestamp = false)
 
-            val viewStateAfterProcessingStart: MainViewState = awaitItem()
-            assertEquals(viewStateAfterProcessingStart, viewStateAfterProcessingStart.copy(isLoading = true))
+            awaitItem() // Loading state update
+            assertEquals(awaitItem().processSuccessEvent, StateEvent.Triggered)
             viewModel.setShowMessageConsumed()
 
-            val viewStateAfterConsumption: MainViewState = awaitItem()
-            assertEquals(viewStateAfterConsumption, viewStateAfterConsumption.copy(processSuccessEvent = consumed))
+            assertEquals(awaitItem().processSuccessEvent, StateEvent.Consumed)
 
             cancelAndIgnoreRemainingEvents()
         }
